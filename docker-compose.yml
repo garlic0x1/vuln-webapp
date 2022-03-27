@@ -1,0 +1,17 @@
+version: '3'
+services:
+  mysql:
+    build:
+      dockerfile: Dockerfile
+      context: ./db/
+    ports:
+      - '3306:3306'
+  srv:
+    restart: always
+    build:
+      dockerfile: Dockerfile
+      context: ./src/
+    ports:
+      - '9999:80'
+    expose:
+      - 80

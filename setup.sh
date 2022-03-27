@@ -1,5 +1,7 @@
 #!/bin/bash
 
+PORT=$1
+
 docker build -t "srv" src/
 docker build -t "mysql" db/
 
@@ -17,5 +19,5 @@ set -e
 
 docker run --name mysql --network my-net -d -p 3306:3306 mysql
 sleep 10
-docker run --name srv --network my-net -d -p 9001:80 srv
+docker run --name srv --network my-net -d -p $PORT:80 srv
 
