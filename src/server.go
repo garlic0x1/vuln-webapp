@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"regexp"
+	"time"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -70,6 +71,7 @@ func home(w http.ResponseWriter, r *http.Request) {
 
 	footer(w,r)
 }
+
 func main() {
 
 	// get .env secrets
@@ -87,10 +89,17 @@ func main() {
 	// sql.DB should be long lived "defer" closes it once this function ends
 	defer db.Close()
 
-	// Test the connection to the database
-	err = db.Ping()
-	if err != nil {
-		panic(err.Error())
+	// wait for the database to be ready when starting containers together
+	ready := false
+	for ready == false {
+		// Test the connection to the database
+		err = db.Ping()
+		if err != nil {
+			//panic(err.Error())
+			time.Sleep(time.Second)
+		} else {
+			ready = true
+		}
 	}
 
 	// set up handlers for endpoints

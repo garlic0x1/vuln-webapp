@@ -20,15 +20,15 @@ func searchPage(res http.ResponseWriter, req *http.Request) {
 		fmt.Fprintln(res, err)
 		log.Println("template executing error: ", err) //log it
 	}
-	footer(res, req)
 }
 
 func data(res http.ResponseWriter, req *http.Request) {
 	menu(res, req)
+	searchPage(res, req)
 
 	// If method is GET serve an query page
 	if req.Method != "POST" {
-		searchPage(res, req)
+		footer(res, req)
 		return
 	}
 
