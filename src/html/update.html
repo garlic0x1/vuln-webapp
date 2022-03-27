@@ -3,20 +3,28 @@
 <div>
 <h1>Update your status!</h1>
 
-<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<input id="updateStatus" type="button" value="Online" onclick="updateStatus('online')" />
+<input id="updateStatus" type="button" value="Offline" onclick="updateStatus('offline')" />
 
-<form action="/account" method="POST">
-<div class="w3-row-padding">
-  <div class="w3-third">
-  <input type="radio" id="online" name="status" value="online">
-<label for="online">Online</label><br>
-<input type="radio" id="offline" name="status" value="offline">
-<label for="css">Offline</label><br>
-  </div>
-</div>
-</div>
-  <input type="submit" value="update">
-</form>
 </div>
 	</main>
 </body>
+<script>
+
+	function updateStatus(str) {
+		var xhr = new XMLHttpRequest();
+		xhr.open("POST", window.location.href, true);
+		
+		//Send the proper header information along with the request
+		xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		
+		xhr.onreadystatechange = function() { // Call a function when the state changes.
+		    if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+		        // Request finished. Do processing here.
+			window.location.reload()
+		    }
+		}
+		xhr.send("status=" + str);
+	}
+
+</script>
