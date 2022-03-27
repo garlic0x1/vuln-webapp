@@ -17,6 +17,7 @@ func searchPage(res http.ResponseWriter, req *http.Request) {
 	}
 	err = search.Execute(res, nil)
 	if err != nil { // if there is an error
+		fmt.Fprintln(res, err)
 		log.Println("template executing error: ", err) //log it
 	}
 	footer(res, req)
@@ -35,6 +36,7 @@ func data(res http.ResponseWriter, req *http.Request) {
 	// Make a Regex to say we only want letters and numbers
 	reg, err := regexp.Compile("[^a-zA-Z0-9]+")
 	if err != nil {
+		fmt.Fprintln(res, err)
 		log.Fatal(err)
 	}
 	_ = reg
@@ -49,6 +51,7 @@ func data(res http.ResponseWriter, req *http.Request) {
 	// Grab from the database
 	rows, err := db.Query(buildquery)
 	if err != nil {
+		fmt.Fprintln(res, err)
 		fmt.Println("error performing query", err)
 		return
 	}
@@ -86,7 +89,7 @@ func data(res http.ResponseWriter, req *http.Request) {
 	}
 	form, err := template.ParseFiles("html/users.html")
 	if err != nil {
-		log.Println(res, err)
+		fmt.Fprintln(res, err)
 	}
 	err = form.Execute(res, Tpl{
 		Users: build_tpls,
