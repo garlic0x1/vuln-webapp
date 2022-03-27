@@ -1,0 +1,19 @@
+<body>
+	<div>
+		<h2>Matching results:</h2>
+		<table style='table-layout:fixed'>
+			<tr>
+				<th style='width:100px'>ID</th>
+				<th>User</th>
+				<th>Status</th>
+			</tr>
+			{{range .Users}}
+			<tr>
+				<td>{{.ID}}</td>
+				<td style='overflow-x:scroll'>{{.User}}</td>
+				<td style='overflow-x:scroll'>{{.Status}}</td>
+			</tr>
+			{{end}}
+		</table>
+	</div>
+</body>
