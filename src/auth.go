@@ -71,7 +71,7 @@ func account(w http.ResponseWriter, r *http.Request) {
 
 		log.Println(result)
 
-		http.Redirect(w, r, "/", 303)
+		http.Redirect(w, r, fmt.Sprintf("/account?user=%s", session.Values["username"]), 303)
 	}
 	menu(w, r)
 	user, ok := r.URL.Query()["user"]
@@ -98,8 +98,11 @@ func account(w http.ResponseWriter, r *http.Request) {
 
 	// display username, status, etc
 	fmt.Fprintln(w, "<body><main><div>")
+	fmt.Fprintln(w, "<h2>Username</h2><big>")
 	fmt.Fprintln(w, databaseUsername)
+	fmt.Fprintln(w, "</big><h2>Status</h2><big>")
 	fmt.Fprintln(w, databaseStatus)
+	fmt.Fprintln(w, "</big>")
 	fmt.Fprintln(w, "</body></main></div>")
 
 	// if session user is the same, allow modification of status
