@@ -16,7 +16,7 @@ func account(w http.ResponseWriter, r *http.Request) {
 		//username := r.FormValue("username") // can add idor here
     		status := r.FormValue("status")
 		
-		result, err := db.Exec("UPDATE users SET status=? WHERE username=?", status, session.Values["username"])
+		_, err := db.Exec("UPDATE users SET status=? WHERE username=?", status, session.Values["username"])
 		if err != nil {
 			log.Println("ERROR UPDATING",err)
 		}
