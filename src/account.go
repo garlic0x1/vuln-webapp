@@ -59,6 +59,8 @@ func account(w http.ResponseWriter, r *http.Request) {
 	// if session user is the same, allow modification of status
 	// and show messages
 	if session.Values["authenticated"] == true && session.Values["username"] == user[0] {
+
+		serveFile(w, r, "html/update.html")
 		var dbID int
 		err = db.QueryRow("select id from users where username=?", user[0]).Scan(&dbID)
 		if err != nil {
@@ -121,8 +123,6 @@ func account(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println("Error executing template", err)
 		}
-
-		serveFile(w, r, "html/update.html")
 	} else {
 		// if its another user allow sending a message
 		var senderID int
