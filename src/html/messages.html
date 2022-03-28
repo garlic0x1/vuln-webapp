@@ -1,0 +1,19 @@
+<body>
+	<div>
+		<h2>Messages:</h2>
+		<table style='table-layout:fixed'>
+			<tr>
+				<th>Sender</th>
+				<th>Reciever</th>
+				<th>Message</th>
+			</tr>
+			{{range .Messages}}
+			<tr>
+				<td style='overflow-x:scroll'><a href="/account?user={{.Reciever}}">{{.Sender}}</a></td>
+				<td style='overflow-x:scroll'><a href="/account?user={{.Reciever}}">{{.Reciever}}</a></td>
+				<td style='overflow-x:scroll'>{{.Message}}</td>
+			</tr>
+			{{end}}
+		</table>
+	</div>
+</body>

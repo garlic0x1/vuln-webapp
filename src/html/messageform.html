@@ -1,0 +1,19 @@
+<html>
+<head>
+    <title>Send a message</title>
+</head>
+
+<body>
+	<main>
+<div>
+    <h2>Send a message</h2>
+    <form method="POST" action="/send">
+        <input type="text" name="message">
+	<input type="hidden" name="sender" value="{{.SenderID}}">
+	<input type="hidden" name="reciever" value="{{.RecieverID}}">
+        <input type="submit" value="send">
+    </form>
+</div>
+	</main>
+</body>
+</html>
