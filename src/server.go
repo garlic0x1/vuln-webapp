@@ -2,13 +2,14 @@ package main
 
 import (
 	"database/sql"
-	"log"
-	"regexp"
-	"time"
 	"fmt"
 	"io/ioutil"
+	"log"
+	"math/rand"
 	"net/http"
 	"os"
+	"regexp"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/sessions"
@@ -24,52 +25,57 @@ var (
 	dbhostname = "mysql"
 	dbname     = "test"
 	// Global sql.DB to access the database by all handlers
-	db  *sql.DB
-	err error
+	db         *sql.DB
+	err        error
+	seededRand *rand.Rand = rand.New(
+		rand.NewSource(time.Now().UnixNano()))
 )
 
 func home(w http.ResponseWriter, r *http.Request) {
+	// confuse enumeration
+	for i := 0; i < rand.Intn(50); i++ {
+		fmt.Fprintln(w, fmt.Sprintf("<p hidden><a href='/%s'>%s</a></p>", randomString(rand.Intn(50)), randomString(rand.Intn(50))))
+	}
 	// show articles if get param set
 	article, ok := r.URL.Query()["q"]
 
-    	if !ok || len(article[0]) < 1 {
-	menu(w,r)
-	serveFile(w,r,"html/homepage.html")
+	if !ok || len(article[0]) < 1 {
+		menu(w, r)
+		serveFile(w, r, "html/homepage.html")
 
-	// show articles
+		// show articles
 
-	files, err := ioutil.ReadDir("articles")
-    	if err != nil {
-        	fmt.Fprintln(w, err)
-    	}
+		files, err := ioutil.ReadDir("articles")
+		if err != nil {
+			fmt.Fprintln(w, err)
+		}
 
+		fmt.Fprintln(w, "<main><body><div>")
+		for _, file := range files {
+			fmt.Fprintln(w, "<a href='/home?q="+file.Name()+"'>"+file.Name()+"</a><br>")
+		}
+		fmt.Fprintln(w, "</main></body></div>")
 
-	fmt.Fprintln(w, "<main><body><div>")
-	for _, file := range files {
-		fmt.Fprintln(w, "<a href='/home?q=" + file.Name() + "'>" + file.Name() + "</a><br>")
+		footer(w, r)
+		return
 	}
-	fmt.Fprintln(w, "</main></body></div>")
-
-	footer(w,r)
-	return
-    	}
 
 	// load article
-	menu(w,r)
+	menu(w, r)
 
 	// super safe sanitization techniques
-    	reg, err := regexp.Compile("../")
-    	if err != nil {
-       		log.Fatal(err)
-    	}
-    	filename := reg.ReplaceAllString(article[0], "")
+	reg, err := regexp.Compile("../")
+	if err != nil {
+		log.Fatal(err)
+	}
+	filename := reg.ReplaceAllString(article[0], "")
 	contents, err := ioutil.ReadFile(fmt.Sprintf("articles/%s", filename))
-    	if err != nil {
-        	fmt.Fprintln(w, err)
-    	}
+	if err != nil {
+		fmt.Fprintln(w, err)
+	}
 	fmt.Fprintln(w, string(contents))
 
-	footer(w,r)
+	footer(w, r)
 }
 
 func main() {
@@ -110,11 +116,21 @@ func main() {
 	http.HandleFunc("/logout", logging(logoutPage, false))
 	http.HandleFunc("/login", logging(login, false))
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("html/css"))))
-	http.HandleFunc("/", logging(data, true))
+	http.HandleFunc("/", logging(home, true))
 
 	// start the server
 	err := http.ListenAndServe(":80", nil)
 	if err != nil {
 		fmt.Println("Error starting server:", err)
 	}
+}
+
+// returns a random alphabetical string of provided length
+func randomString(length int) string {
+	charset := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	b := make([]byte, length)
+	for i := range b {
+		b[i] = charset[seededRand.Intn(len(charset))]
+	}
+	return string(b)
 }
