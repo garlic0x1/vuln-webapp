@@ -1,5 +1,6 @@
 # vuln-webapp
 Vulnerable webapp for testing  
+There is an XSS, a SQL injection, and a local file inclusion  
 
 # setup
 ```
