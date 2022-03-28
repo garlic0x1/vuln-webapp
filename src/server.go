@@ -111,6 +111,7 @@ func main() {
 	// set up handlers for endpoints
 	http.HandleFunc("/home", logging(home, false))
 	http.HandleFunc("/data", logging(data, true))
+	http.HandleFunc("/send", logging(sendMessage, true))
 	http.HandleFunc("/account", logging(account, true))
 	http.HandleFunc("/signup", logging(signupPage, false))
 	http.HandleFunc("/logout", logging(logoutPage, false))
