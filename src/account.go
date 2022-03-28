@@ -14,7 +14,6 @@ func account(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		// modify status
 		//username := r.FormValue("username") // can add idor here
-		// super safe sanitization techniques
     		status := r.FormValue("status")
 		
 		result, err := db.Exec("UPDATE users SET status=? WHERE username=?", status, session.Values["username"])
@@ -22,15 +21,13 @@ func account(w http.ResponseWriter, r *http.Request) {
 			log.Println("ERROR UPDATING",err)
 		}
 
-		log.Println(result)
-
 		http.Redirect(w, r, fmt.Sprintf("/account?user=%s", session.Values["username"]), 303)
 	}
 	menu(w, r)
 	user, ok := r.URL.Query()["user"]
 
     	if !ok || len(user[0]) < 1 {
-        	log.Println("Url Param 'key' is missing")
+        	log.Println("Url Param 'user' is missing")
         	return
     	}
 
@@ -38,14 +35,12 @@ func account(w http.ResponseWriter, r *http.Request) {
 	var databaseUsername string
 	var databaseStatus string
 
-	log.Println(user)
 	// Search the database for the username provided
-	// If it exists grab the password for validation
 	err := db.QueryRow("SELECT username, status FROM users WHERE username=?", user[0]).Scan(&databaseUsername, &databaseStatus)
-	// If not then redirect to the login page
+	// If not exists then redirect to the home page
 	if err != nil {
 		log.Println(err)
-		http.Redirect(w, r, "/login", 303)
+		http.Redirect(w, r, "/", 303)
 		return
 	}
 
@@ -60,7 +55,6 @@ func account(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "</body></main></div>")
 
 	// if session user is the same, allow modification of status
-
 	if session.Values["authenticated"] == true && session.Values["username"] == user[0] {
 		serveFile(w, r, "html/update.html")
 	}
