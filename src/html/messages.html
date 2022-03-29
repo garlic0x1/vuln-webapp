@@ -1,14 +1,36 @@
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
 <body>
 	<main>
-	<div>
 		<h2>Messages:</h2>
+	<div class="w3-bar w3-black">
+  <button class="w3-bar-item w3-button" onclick="openTable('sent')">Sent</button>
+  <button class="w3-bar-item w3-button" onclick="openTable('recieved')">Recieved</button>
+</div>
+	<div id='sent' class='resultTable'>
 		<table style='table-layout:fixed'>
 			<tr>
 				<th>Sender</th>
 				<th>Reciever</th>
 				<th>Message</th>
 			</tr>
-			{{range .Messages}}
+			{{range .Sent}}
+			<tr>
+				<td style='overflow-x:scroll'><a href="/account?user={{.Sender}}">{{.Sender}}</a></td>
+				<td style='overflow-x:scroll'><a href="/account?user={{.Reciever}}">{{.Reciever}}</a></td>
+				<td style='overflow-x:scroll'>{{.Message}}</td>
+			</tr>
+			{{end}}
+		</table>
+	</div>
+	<div id='recieved' class='resultTable' style='dislplay:none'>
+		<table style='table-layout:fixed'>
+			<tr>
+				<th>Sender</th>
+				<th>Reciever</th>
+				<th>Message</th>
+			</tr>
+			{{range .Recieved}}
 			<tr>
 				<td style='overflow-x:scroll'><a href="/account?user={{.Sender}}">{{.Sender}}</a></td>
 				<td style='overflow-x:scroll'><a href="/account?user={{.Reciever}}">{{.Reciever}}</a></td>
@@ -19,3 +41,14 @@
 	</div>
 	</main>
 </body>
+<script>
+function openTable(tableName) {
+  var i;
+  var x = document.getElementsByClassName("resultTable");
+  for (i = 0; i < x.length; i++) {
+    x[i].style.display = "none";
+  }
+  document.getElementById(tableName).style.display = "block";
+}
+openTable('recieved');
+</script>
