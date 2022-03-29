@@ -73,7 +73,13 @@ func account(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintln(w, "Error performing query", err)
 			return
 		}
+		rows2, err := db.Query("select sender, reciever, message from messages where sender=?", dbID)
+		if err != nil {
+			fmt.Fprintln(w, "Error performing query", err)
+			return
+		}
 
+		defer rows2.Close()
 		defer rows.Close()
 
 		//html table
@@ -84,12 +90,38 @@ func account(w http.ResponseWriter, r *http.Request) {
 		}
 	
 		type Tpl struct {
-			Messages []tpl
+			Sent []tpl
+			Recieved []tpl
 		}
 	
-		var build_tpls []tpl
+		var build_recieved []tpl
+		var build_sent []tpl
 	
 		// populate the template struct
+		for rows2.Next() {
+			var senderID int
+			var senderName string
+			var recieverID int
+			var recieverName string
+			var message string
+	
+			err = rows2.Scan(&senderID, &recieverID, &message)
+			if err != nil {
+				// handle this error
+				panic(err)
+			}
+
+			// get usernames from ID
+			err = db.QueryRow("select username from users where id=?", senderID).Scan(&senderName)
+			if err != nil { log.Println(err) }
+			err = db.QueryRow("select username from users where id=?", recieverID).Scan(&recieverName)
+			if err != nil { log.Println(err) }
+			build_sent = append(build_sent, tpl{
+				Sender:     senderName,
+				Reciever:   recieverName,
+				Message:    message,
+			})
+		}
 		for rows.Next() {
 			var senderID int
 			var senderName string
@@ -107,7 +139,7 @@ func account(w http.ResponseWriter, r *http.Request) {
 			err = db.QueryRow("select username from users where id=?", senderID).Scan(&senderName)
 			err = db.QueryRow("select username from users where id=?", recieverID).Scan(&recieverName)
 
-			build_tpls = append(build_tpls, tpl{
+			build_recieved = append(build_recieved, tpl{
 				Sender:     senderName,
 				Reciever:   recieverName,
 				Message:    message,
@@ -118,7 +150,8 @@ func account(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintln(w, err)
 		}
 		err = form.Execute(w, Tpl{
-			Messages: build_tpls,
+			Sent: build_sent,
+			Recieved: build_recieved,
 		})
 		if err != nil {
 			log.Println("Error executing template", err)
