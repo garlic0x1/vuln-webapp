@@ -1,7 +1,6 @@
 # vuln-webapp
 Vulnerable webapp for testing  
-There is an XSS, a SQL injection, and a local file inclusion  
-You can also send messages as another user  
+There are 2 XSS, a SQL injection, a local file inclusion, and broken access control (that I know of)  
 
 # setup
 ```
